@@ -13,80 +13,108 @@ import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 public class GUI extends Application {
+
+    private final VBox root;
+    private final HBox lengthBox;
+    private final HBox heightBox;
+    private final HBox controlBox;
+
+    private final Label errorLabel;
+    private final Label lengthLabel;
+    private final Label heightLabel;
+    private final Label areaLabel;
+    private final Label perimeterLabel;
+
+    private final TextField lengthField;
+    private final TextField heightField;
+
+    private final Button areaButton;
+    private final Button perimeterButton;
+
+    private final Scene scene;
+
+    public GUI() {
+        this.root = new VBox();
+        this.lengthBox = new HBox();
+        this.heightBox = new HBox();
+        this.controlBox = new HBox();
+
+        this.errorLabel = new Label("");
+
+        this.lengthLabel = new Label("Length");
+        this.heightLabel = new Label("Height");
+
+        this.lengthField = new TextField();
+        this.heightField = new TextField();
+
+        this.areaButton = new Button("Area");
+        this.areaLabel = new Label("0.0");
+
+        this.perimeterButton = new Button("Perimeter");
+        this.perimeterLabel = new Label("0.0");
+
+        this.scene = new Scene(root);
+
+        initStyles();
+        initHierarchy();
+        initCallbacks();
+    }
+
+    private void initHierarchy() {
+        this.lengthBox.getChildren().addAll(this.lengthLabel,
+                this.lengthField);
+        this.heightBox.getChildren().addAll(this.heightLabel,
+                this.heightField);
+        this.controlBox.getChildren().addAll(this.areaButton,
+                this.areaLabel,
+                this.perimeterButton,
+                this.perimeterLabel);
+        this.root.getChildren().addAll(this.errorLabel,
+                this.lengthBox,
+                this.heightBox,
+                this.controlBox);
+    }
+
+    private void initStyles() {
+        this.errorLabel.setTextFill(Paint.valueOf("#f00"));
+        this.root.setPadding(new Insets(0, 16, 16, 16));
+    }
+
+    private void initCallbacks() {
+        this.areaButton.setOnMouseClicked(event ->
+                handleAction((l, h) -> l * h, this.areaLabel));
+
+        perimeterButton.setOnMouseClicked(event ->
+                handleAction((l, h) -> l * 2 + h * 2, this.perimeterLabel));
+    }
+
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        VBox root = new VBox();
-        HBox lengthBox = new HBox();
-        HBox heightBox = new HBox();
-        HBox controlBox = new HBox();
-
-        Label errorLabel = new Label("");
-
-        Label lengthLabel = new Label("Length");
-        Label heightLabel = new Label("Height");
-
-        TextField lengthField = new TextField();
-        TextField heightField = new TextField();
-
-        Button areaButton = new Button("Area");
-        Label areaLabel = new Label("0.0");
-
-        Button perimeterButton = new Button("Perimeter");
-        Label perimeterLabel = new Label("0.0");
-
-        lengthBox.getChildren().addAll(lengthLabel, lengthField);
-        heightBox.getChildren().addAll(heightLabel, heightField);
-
-        controlBox.getChildren().addAll(areaButton, areaLabel, perimeterButton, perimeterLabel);
-        root.getChildren().addAll(errorLabel, lengthBox, heightBox, controlBox);
-
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene);
-
-        areaButton.setOnMouseClicked(event -> {
-            handleAction((l, h) -> l * h, lengthField, heightField, errorLabel, areaLabel);
-        });
-
-        perimeterButton.setOnMouseClicked(event -> {
-            handleAction((l, h) -> l * 2 + h * 2, lengthField, heightField, errorLabel, perimeterLabel);
-        });
-
-        errorLabel.setTextFill(Paint.valueOf("#f00"));
-
-        root.setPadding(new Insets(0, 16, 16, 16));
-        root.setSpacing(10);
-        lengthBox.setSpacing(10);
-        heightBox.setSpacing(10);
-        controlBox.setSpacing(4);
-
-
+    public void start(Stage primaryStage) {
+        primaryStage.setScene(this.scene);
         primaryStage.setMinWidth(280);
-        primaryStage.setTitle("EPAM Lab-1");
+        primaryStage.setTitle("<epam> Lab-1");
         primaryStage.show();
     }
 
-    interface Action {
+    private interface Action {
         float action(float length, float height);
     }
 
-    private void handleAction(Action action, TextField lengthField, TextField heightField, Label errorLabel, Label resultLabel) {
+    private void handleAction(Action action, Label resultLabel) {
         try {
-            float length = Float.parseFloat(lengthField.textProperty().getValue());
-            float height = Float.parseFloat(heightField.textProperty().getValue());
+            float length = Float.parseFloat(this.lengthField.textProperty().getValue());
+            float height = Float.parseFloat(this.heightField.textProperty().getValue());
 
             if (length < 0 || height < 0) {
-                errorLabel.setText("Numbers must be positive");
+                this.errorLabel.setText("Numbers must be positive");
                 return;
             }
 
             resultLabel.setText(String.valueOf(action.action(length, height)));
-            errorLabel.setText("");
-        } catch (Exception e) {
-            errorLabel.setText("Invalid input");
-        }
-    }
 
-    public static void main(String[] args) {
-        Application.launch(GUI.class);
+            this.errorLabel.setText("");
+        } catch (Exception e) {
+            this.errorLabel.setText("Invalid input");
+        }
     }
 }
