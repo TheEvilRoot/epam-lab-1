@@ -1,5 +1,6 @@
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -8,6 +9,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
 public class GUI extends Application {
@@ -49,11 +51,17 @@ public class GUI extends Application {
             handleAction((l, h) -> l * 2 + h * 2, lengthField, heightField, errorLabel, perimeterLabel);
         });
 
+        errorLabel.setTextFill(Paint.valueOf("#f00"));
+
+        root.setPadding(new Insets(0, 16, 16, 16));
         root.setSpacing(10);
         lengthBox.setSpacing(10);
         heightBox.setSpacing(10);
         controlBox.setSpacing(4);
 
+
+        primaryStage.setMinWidth(280);
+        primaryStage.setTitle("EPAM Lab-1");
         primaryStage.show();
     }
 
