@@ -1,22 +1,24 @@
+package com.theevilroot.epam.lab1.view;
+
+import com.theevilroot.epam.lab1.model.Model;
+import com.theevilroot.epam.lab1.presenter.Presenter;
+import com.theevilroot.epam.lab1.presenter.PresenterImpl;
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.stage.Stage;
 
-public class GUI extends Application {
+public class GUI extends Application implements MainView {
 
     private final VBox root;
-    private final HBox lengthBox;
-    private final HBox heightBox;
+    private final VBox lengthBox;
+    private final VBox heightBox;
     private final HBox controlBox;
 
     private final Label errorLabel;
@@ -33,10 +35,14 @@ public class GUI extends Application {
 
     private final Scene scene;
 
+    private final Presenter presenter;
+
     public GUI() {
+        this.presenter = new PresenterImpl(this, Model.defaultModel);
+
         this.root = new VBox();
-        this.lengthBox = new HBox();
-        this.heightBox = new HBox();
+        this.lengthBox = new VBox();
+        this.heightBox = new VBox();
         this.controlBox = new HBox();
 
         this.errorLabel = new Label("");
@@ -82,10 +88,10 @@ public class GUI extends Application {
 
     private void initCallbacks() {
         this.areaButton.setOnMouseClicked(event ->
-                handleAction((l, h) -> l * h, this.areaLabel));
+                presenter.requestArea(lengthField.getText(), heightField.getText()));
 
         perimeterButton.setOnMouseClicked(event ->
-                handleAction((l, h) -> l * 2 + h * 2, this.perimeterLabel));
+                presenter.requestPerimeter(lengthField.getText(), heightField.getText()));
     }
 
     @Override
@@ -96,25 +102,24 @@ public class GUI extends Application {
         primaryStage.show();
     }
 
-    private interface Action {
-        float action(float length, float height);
+
+    @Override
+    public void showError(String error) {
+        errorLabel.setText(error);
     }
 
-    private void handleAction(Action action, Label resultLabel) {
-        try {
-            float length = Float.parseFloat(this.lengthField.textProperty().getValue());
-            float height = Float.parseFloat(this.heightField.textProperty().getValue());
+    @Override
+    public void showAreaResult(String result) {
+        areaLabel.setText(result);
+    }
 
-            if (length < 0 || height < 0) {
-                this.errorLabel.setText("Numbers must be positive");
-                return;
-            }
+    @Override
+    public void showPerimeterResult(String result) {
+        perimeterLabel.setText(result);
+    }
 
-            resultLabel.setText(String.valueOf(action.action(length, height)));
-
-            this.errorLabel.setText("");
-        } catch (Exception e) {
-            this.errorLabel.setText("Invalid input");
-        }
+    @Override
+    public void clearError() {
+        errorLabel.setText("");
     }
 }
